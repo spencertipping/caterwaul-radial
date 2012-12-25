@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # 99aeabc9ec7fe80b1b39f5e53dc7e49e      <- self-modifying Perl magic
-# state:  9a985af71ea00881e30b6104bf4305a8
-# istate: 53f23a06224e116268e1fc6608a3d9aa
+# state:  47a313108e6d72355f588bf02e144826
+# istate: 5ad9ffc77b7e56d2e7b1d3cccdfbb5c5
 # id:     153c1a7d2692a962c6aacb96d56e4bb6
 
 # This is a self-modifying Perl file. I'm sorry you're viewing the source (it's
@@ -1684,7 +1684,7 @@ Introduction.
 Radial is a canvas-based UI library for Caterwaul. It allows you to represent user interfaces as immutable data structures, which makes it possible to manipulate interfaces with pure functions over
 previous UI states and event objects. Radial provides several layers of abstraction, each built on the ones above it:
 
-| 1. Low-level rendering combinators and transformation matrix reflection. This simplifies the process of drawing on a context.
+| 1. Low-level rendering combinators. This simplifies the process of drawing on a context.
   2. Compositional offscreen buffer allocation. This simplifies composited rendering operations.
   3. Bounded components with rendering and event handling. Component hierarchies are not supported; any hierarchical elements need to be flattened prior to rendering.
 
@@ -1734,6 +1734,11 @@ These functions are first invoked with parameters, then the results are invoked 
     pline(x, y)(c) = c.lineTo(x, y),  pbezier(c1x, c1y, c2x, c2y, x, y)(c) = c.bezierCurveTo(c1x, c1y, c2x, c2y, x, y),  parc(x, y, r, sa, ea, ac)(c) = c.arc(x, y, r, sa, ea, ac),
     prect(x, y, w, h)(c) = c.rect(x, y, w, h),
 
+  Image rendering.
+  A function to render an image from one element to another. Doesn't include any support for repositioning or scaling the image, but this can be achieved by using the transformation matrix.
+
+    image(source, options, options = options || {})(c) = c.drawImage(source, 0, 0),
+
   Text rendering.
   You can easily render text from inside a path, but text operations themselves are not path transformations. Instead, the canvas context provides two new methods, fillText() and strokeText(). These
   methods are represented here as a pair of functions, fill_text() and stroke_text(). You can specify options for each of these functions, which is useful for setting the font and specifying how the text
@@ -1741,6 +1746,18 @@ These functions are first invoked with parameters, then the results are invoked 
 
     stroke_text(s, options)(c) = (c.save(), options /-install_options_on/ c, c.strokeText(s, 0, 0), c.restore()),
     fill_text(s, options)(c)   = (c.save(), options /-install_options_on/ c, c.fillText(s, 0, 0),   c.restore()),
+
+Compositing framework.
+This is a mechanism by which intermediate canvases are allocated and compositing is done between them. We do this by setting up a 'pipeline', which is a series of canvas elements linked with render
+functions. Each render function takes a source and a destination canvas and is expected to perform the compositing for that stage. Once a pipeline is constructed, you can invoke it by using a compositing
+render function:
+
+| render = path(translate(10, 20), stroke_text('foo', {color: 'red'}));
+  screen_canvas = document.createElement('canvas');
+  composited_layer = composite(400, 300, screen_canvas, "image(composited_layer)(_)".qf);       // copy from composite layer to screen canvas
+  composited_layer(render);
+
+The last call kicks off the whole process. Once the render combinator structure returns, we then render the composite layer downwards onto the screen canvas.
 
 ]});
 
