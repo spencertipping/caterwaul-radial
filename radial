@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # 99aeabc9ec7fe80b1b39f5e53dc7e49e      <- self-modifying Perl magic
-# state:  47a313108e6d72355f588bf02e144826
-# istate: 5ad9ffc77b7e56d2e7b1d3cccdfbb5c5
+# state:  ae496ea6aee0d868b0cf0547fec1f5e5
+# istate: e3bba06c97aeb00f841253ea04d5f12d
 # id:     153c1a7d2692a962c6aacb96d56e4bb6
 
 # This is a self-modifying Perl file. I'm sorry you're viewing the source (it's
@@ -237,6 +237,7 @@ meta::define_form 'template', sub {
 __
 meta::meta('type::waul', 'meta::functor::editable \'waul\', inherit => 1, extension => \'.waul\', default => \'edit\';');
 meta::alias('e', 'edit sdoc::waul::radial');
+meta::alias('erf', 'edit function::render');
 meta::bootstrap('html', <<'__');
 <html>
   <head>
@@ -685,6 +686,13 @@ if (@_) {my $pattern = join '|', @_;
 else    {pop @{$transient{path}}}
 __
 meta::function('reload', 'around_hook(\'reload\', sub {execute($_) for grep ! /^bootstrap::/, keys %data});');
+meta::function('render', <<'__');
+my ($options, @stuff) = separate_options(@_);
+
+file::write('src/radial.waul.sdoc', retrieve('sdoc::waul::radial'), mkpath => 1);
+file::write('src/radial.md', retrieve('markdown::waul::radial'));
+sh('waul src/radial.waul.sdoc') unless $$options{-W};
+__
 meta::function('rm', <<'__');
 around_hook('rm', @_, sub {
   exists $data{$_} or terminal::warning("$_ does not exist") for @_;
