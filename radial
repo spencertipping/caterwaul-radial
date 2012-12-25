@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # 99aeabc9ec7fe80b1b39f5e53dc7e49e      <- self-modifying Perl magic
-# state:  ed9090003f1d57ca9cb7e88843d08c37
-# istate: c86fcbd867c591e2dc148c17477d5c6a
+# state:  8f507fbc8853c18ff07a50db63a1b9a9
+# istate: f24aff18eec5d94ed954e6eef40b88b2
 # id:     153c1a7d2692a962c6aacb96d56e4bb6
 
 # This is a self-modifying Perl file. I'm sorry you're viewing the source (it's
@@ -238,6 +238,7 @@ __
 meta::meta('type::waul', 'meta::functor::editable \'waul\', inherit => 1, extension => \'.waul\', default => \'edit\';');
 meta::alias('e', 'edit sdoc::waul::radial');
 meta::alias('erf', 'edit function::render');
+meta::alias('et', 'edit sdoc::waul::radial-themes');
 meta::bootstrap('html', <<'__');
 <html>
   <head>
@@ -689,9 +690,14 @@ meta::function('reload', 'around_hook(\'reload\', sub {execute($_) for grep ! /^
 meta::function('render', <<'__');
 my ($options, @stuff) = separate_options(@_);
 
-file::write('src/radial.waul.sdoc', retrieve('sdoc::waul::radial'), mkpath => 1);
-file::write('src/radial.md', retrieve('markdown::waul::radial'));
-sh('waul src/radial.waul.sdoc') unless $$options{-W};
+my @modules = qw/radial radial-themes/;
+
+file::write("src/$_.waul.sdoc", retrieve("sdoc::waul::$_"), mkpath => 1),
+file::write("src/$_.md", retrieve("markdown::waul::radial")) for @modules;
+
+unless ($$options{-W}) {
+  sh("waul src/$_.waul.sdoc") for @modules;
+}
 __
 meta::function('rm', <<'__');
 around_hook('rm', @_, sub {
@@ -1747,6 +1753,11 @@ These functions are first invoked with parameters, then the results are invoked 
 
     image(source, options, options = options || {})(c) = c.drawImage(source, 0, 0),
 
+  Compositing modes.
+  Wrappers around globalAlpha and globalCompositeOperation.
+
+    
+
   Text rendering.
   You can easily render text from inside a path, but text operations themselves are not path transformations. Instead, the canvas context provides two new methods, fillText() and strokeText(). These
   methods are represented here as a pair of functions, fill_text() and stroke_text(). You can specify options for each of these functions, which is useful for setting the font and specifying how the text
@@ -1772,22 +1783,33 @@ built for composing transforms, not for merging images. You can merge images man
     composite(w, h, destination, render_fn, layer = composite_canvas(w, h))(f) = f(layer.getContext('2d')) -then- render_fn(layer)(destination.getContext('2d')),
 
 Component library.
-We don't support complicated things like hierarchical containment, so the component library itself is quite simple. We just provide a function to find the components which claim to contain a given point.
-This sets up the model for mouse interaction and it becomes a base from which we can create more complex behaviors. In Radial, components are modeled as projections of a logical UI object. For example,
-we might say something like this:
+Radial gives you an functional-style UI layer and does not provide ways to arrange components hierarchically. It's expected that the program will manage any positional covariance through functional
+abstraction, which is a practical alternative since UI states are immutable data structures generated as a function of time.
 
-| ui = [{type: 'button', x: 40, y: 50, w: 50, h: 10, text: 'foo'}, ...];
-  render = {button: given.c in path(rect(c.x, c.y, c.w, c.h), fill(),
-                                    translate(c.x + c.w/2, c.y + c.h/2),
-                                    fill_text(c.text, {text_align: 'center', text_baseline: 'middle'})),
-            ...};
-  hit_test = {button: given.c in in_rectangle(c.x, c.y, c.w, c.h),
-              ...};
 
-Notice that render and hit_test are separate structures. This allows you to modify the appearance of components independently of their behavior, and in particular illustrates the idea that there is a
-canonical structure representing the state of the UI, and other functions project this state into visual components and areas on the screen.
 
-    in_rectangle(x, y, w, h)(px, py) = px >= x && px <= x + w && py >= y && py <= y + h]});
+  Trivial bounds testing.
+  These functions are used to see when the user is hovering over something or otherwise interacting with it.
+
+    in_rectangle(x, y, w, h)(px, py)     = px >= x && px <= x + w && py >= y && py <= y + h,
+    in_arc(x, y, r0, t0, dr, dt)(px, py) = (pr >= r0 && pr <= r0 + dr && pt >= t0 && pt <= t0 + dt)
+                                           -where [prx = px - x, pry = py - y, pr = Math.sqrt(prx*prx + pry*pry), pt = Math.atan2(prx, pry)]]});
+
+__
+meta::sdoc('waul::radial-themes', <<'__');
+Radial themes | Spencer Tipping
+Licensed under the terms of the MIT source code license
+
+Introduction.
+UI components are separated into their logical representation, which is whatever you choose it to be, and their visual representation, which is usually managed by a theme. Themes provide colors,
+component borders, and things like appearance changes under focus and mouse events, but they usually don't impact the shape or structure of the components (since that would require the mouse interaction
+logic to change).
+
+caterwaul.module('radial-themes', ':all', function ($) {
+
+
+
+});
 
 __
 meta::template('comment', '\'\';     # A mechanism for line or block comments.');
