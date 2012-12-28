@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # 99aeabc9ec7fe80b1b39f5e53dc7e49e      <- self-modifying Perl magic
-# state:  8f507fbc8853c18ff07a50db63a1b9a9
-# istate: f24aff18eec5d94ed954e6eef40b88b2
+# state:  9a1d35d4dfae4bb600ca2ef78d904b00
+# istate: 699d661e94287ce76590b0645040316c
 # id:     153c1a7d2692a962c6aacb96d56e4bb6
 
 # This is a self-modifying Perl file. I'm sorry you're viewing the source (it's
@@ -1738,7 +1738,8 @@ These functions are first invoked with parameters, then the results are invoked 
 
   These transformations are undone after path() completes, and the path is erased as well. The only side-effect of a path() call is rendered output.
 
-    path(fs = +arguments -seq)(c) = (c.save(), c.beginPath(), fs *![x.call(this, c)] -seq, c.restore()),
+    path_apply(fs)(c)  = (c.save(), c.beginPath(), fs *![x.call(this, c)] -seq, c.restore()),
+    path()             = path_apply(arguments),
 
     fill(options)(c)   = (c.save(), options /-install_options_on/ c, c.fill(),   c.restore()),
     stroke(options)(c) = (c.save(), options /-install_options_on/ c, c.stroke(), c.restore()),
@@ -1752,11 +1753,6 @@ These functions are first invoked with parameters, then the results are invoked 
   A function to render an image from one element to another. Doesn't include any support for repositioning or scaling the image, but this can be achieved by using the transformation matrix.
 
     image(source, options, options = options || {})(c) = c.drawImage(source, 0, 0),
-
-  Compositing modes.
-  Wrappers around globalAlpha and globalCompositeOperation.
-
-    
 
   Text rendering.
   You can easily render text from inside a path, but text operations themselves are not path transformations. Instead, the canvas context provides two new methods, fillText() and strokeText(). These
@@ -1785,8 +1781,6 @@ built for composing transforms, not for merging images. You can merge images man
 Component library.
 Radial gives you an functional-style UI layer and does not provide ways to arrange components hierarchically. It's expected that the program will manage any positional covariance through functional
 abstraction, which is a practical alternative since UI states are immutable data structures generated as a function of time.
-
-
 
   Trivial bounds testing.
   These functions are used to see when the user is hovering over something or otherwise interacting with it.

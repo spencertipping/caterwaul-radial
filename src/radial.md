@@ -49,7 +49,8 @@ The path() function is also used to introduce localized transformations:
 
 These transformations are undone after path() completes, and the path is erased as well. The only side-effect of a path() call is rendered output.
 
-      path(fs = +arguments -seq)(c) = (c.save(), c.beginPath(), fs *![x.call(this, c)] -seq, c.restore()),
+      path_apply(fs)(c)  = (c.save(), c.beginPath(), fs *![x.call(this, c)] -seq, c.restore()),
+      path()             = path_apply(arguments),
 
       fill(options)(c)   = (c.save(), options /-install_options_on/ c, c.fill(),   c.restore()),
       stroke(options)(c) = (c.save(), options /-install_options_on/ c, c.stroke(), c.restore()),
@@ -93,19 +94,13 @@ built for composing transforms, not for merging images. You can merge images man
 
 # Component library
 
-We don't support complicated things like hierarchical containment, so the component library itself is quite simple. We just provide a function to find the components which claim to contain a given point.
-This sets up the model for mouse interaction and it becomes a base from which we can create more complex behaviors. In Radial, components are modeled as projections of a logical UI object. For example,
-we might say something like this:
+Radial gives you an functional-style UI layer and does not provide ways to arrange components hierarchically. It's expected that the program will manage any positional covariance through functional
+abstraction, which is a practical alternative since UI states are immutable data structures generated as a function of time.
 
-    ui = [{type: 'button', x: 40, y: 50, w: 50, h: 10, text: 'foo'}, ...];
-    render = {button: given.c in path(rect(c.x, c.y, c.w, c.h), fill(),
-                                      translate(c.x + c.w/2, c.y + c.h/2),
-                                      fill_text(c.text, {text_align: 'center', text_baseline: 'middle'})),
-              ...};
-    hit_test = {button: given.c in in_rectangle(c.x, c.y, c.w, c.h),
-                ...};
+## Trivial bounds testing
 
-Notice that render and hit_test are separate structures. This allows you to modify the appearance of components independently of their behavior, and in particular illustrates the idea that there is a
-canonical structure representing the state of the UI, and other functions project this state into visual components and areas on the screen.
+These functions are used to see when the user is hovering over something or otherwise interacting with it.
 
-        in_rectangle(x, y, w, h)(px, py) = px >= x && px <= x + w && py >= y && py <= y + h]});
+      in_rectangle(x, y, w, h)(px, py)     = px >= x && px <= x + w && py >= y && py <= y + h,
+      in_arc(x, y, r0, t0, dr, dt)(px, py) = (pr >= r0 && pr <= r0 + dr && pt >= t0 && pt <= t0 + dt)
+                                             -where [prx = px - x, pry = py - y, pr = Math.sqrt(prx*prx + pry*pry), pt = Math.atan2(prx, pry)]]});
