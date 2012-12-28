@@ -52,6 +52,8 @@ These transformations are undone after path() completes, and the path is erased 
       path_apply(fs)(c)  = (c.save(), c.beginPath(), fs *![x.call(this, c)] -seq, c.restore()),
       path()             = path_apply(arguments),
 
+      nop(c)             = c,
+
       fill(options)(c)   = (c.save(), options /-install_options_on/ c, c.fill(),   c.restore()),
       stroke(options)(c) = (c.save(), options /-install_options_on/ c, c.stroke(), c.restore()),
       pclose(c)          = c.closePath(),

@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # 99aeabc9ec7fe80b1b39f5e53dc7e49e      <- self-modifying Perl magic
-# state:  9a1d35d4dfae4bb600ca2ef78d904b00
-# istate: 699d661e94287ce76590b0645040316c
+# state:  0ba38e0326a5cba98ac8df806a4ea664
+# istate: 6241d2f4a8118153b7108f83bcf7734b
 # id:     153c1a7d2692a962c6aacb96d56e4bb6
 
 # This is a self-modifying Perl file. I'm sorry you're viewing the source (it's
@@ -1740,6 +1740,8 @@ These functions are first invoked with parameters, then the results are invoked 
 
     path_apply(fs)(c)  = (c.save(), c.beginPath(), fs *![x.call(this, c)] -seq, c.restore()),
     path()             = path_apply(arguments),
+
+    nop(c)             = c,
 
     fill(options)(c)   = (c.save(), options /-install_options_on/ c, c.fill(),   c.restore()),
     stroke(options)(c) = (c.save(), options /-install_options_on/ c, c.stroke(), c.restore()),
