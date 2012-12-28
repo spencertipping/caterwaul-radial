@@ -66,6 +66,7 @@ These transformations are undone after path() completes, and the path is erased 
 
 A function to render an image from one element to another. Doesn't include any support for repositioning or scaling the image, but this can be achieved by using the transformation matrix.
 
+      clear(x, y, w, h)(c)                               = c.clearRect(x, y, w, h),
       image(source, options, options = options || {})(c) = c.drawImage(source, 0, 0),
 
 ## Text rendering

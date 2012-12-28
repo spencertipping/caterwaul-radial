@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # 99aeabc9ec7fe80b1b39f5e53dc7e49e      <- self-modifying Perl magic
-# state:  0ba38e0326a5cba98ac8df806a4ea664
-# istate: 6241d2f4a8118153b7108f83bcf7734b
+# state:  535eb1eb21d53cef2e4dcb5a924958e5
+# istate: 035f4f0ab4d2875179d30bd9d239caf5
 # id:     153c1a7d2692a962c6aacb96d56e4bb6
 
 # This is a self-modifying Perl file. I'm sorry you're viewing the source (it's
@@ -1754,6 +1754,7 @@ These functions are first invoked with parameters, then the results are invoked 
   Image rendering.
   A function to render an image from one element to another. Doesn't include any support for repositioning or scaling the image, but this can be achieved by using the transformation matrix.
 
+    clear(x, y, w, h)(c)                               = c.clearRect(x, y, w, h),
     image(source, options, options = options || {})(c) = c.drawImage(source, 0, 0),
 
   Text rendering.
