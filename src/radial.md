@@ -78,6 +78,14 @@ will be aligned. Text positioning should be done using translation.
       stroke_text(s, options)(c) = (c.save(), options /-install_options_on/ c, c.strokeText(s, 0, 0), c.restore()),
       fill_text(s, options)(c)   = (c.save(), options /-install_options_on/ c, c.fillText(s, 0, 0),   c.restore()),
 
+## Affine transforms
+
+These are stateful within the innermost path() or path_apply() body.
+
+      translate(x, y)(c) = c.translate(x, y),
+      scale(x, y)(c)     = c.scale(x, y),
+      rotate(theta)(c)   = c.rotate(theta),
+
 # Compositing framework
 
 This is a mechanism by which intermediate canvases are allocated and compositing is done between them. We do this by setting up a 'pipeline', which is a series of canvas elements linked with render
