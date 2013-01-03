@@ -49,10 +49,11 @@ These functions are first invoked with parameters, then the results are invoked 
     path()             = path_apply(arguments),
 
     nop(c)             = c,
+    clip(c)            = c.clip(),
+    pclose(c)          = c.closePath(),
 
     fill(options)(c)   = (c.save(), options /-install_options_on/ c, c.fill(),   c.restore()),
     stroke(options)(c) = (c.save(), options /-install_options_on/ c, c.stroke(), c.restore()),
-    pclose(c)          = c.closePath(),
 
     pmove(x, y)(c) = c.moveTo(x, y),  pquad(cx, cy, x, y)(c)               = c.quadraticCurveTo(cx, cy, x, y),           parcto(x1, y1, x2, y2, r)(c) = c.arcTo(x1, y1, x2, y2, r),
     pline(x, y)(c) = c.lineTo(x, y),  pbezier(c1x, c1y, c2x, c2y, x, y)(c) = c.bezierCurveTo(c1x, c1y, c2x, c2y, x, y),  parc(x, y, r, sa, ea, ac)(c) = c.arc(x, y, r, sa, ea, ac),

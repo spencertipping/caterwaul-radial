@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # 99aeabc9ec7fe80b1b39f5e53dc7e49e      <- self-modifying Perl magic
-# state:  c9655c3f3ecff41b5be5bfe57c9bd493
-# istate: 3ee627c2d0b378a78f4a066c312286cb
+# state:  eac5bf9f0fd41bd3b3c90654b19a617e
+# istate: 7880da5e9a7a7574ca91e7576f24f06c
 # id:     153c1a7d2692a962c6aacb96d56e4bb6
 
 # This is a self-modifying Perl file. I'm sorry you're viewing the source (it's
@@ -1742,10 +1742,11 @@ These functions are first invoked with parameters, then the results are invoked 
     path()             = path_apply(arguments),
 
     nop(c)             = c,
+    clip(c)            = c.clip(),
+    pclose(c)          = c.closePath(),
 
     fill(options)(c)   = (c.save(), options /-install_options_on/ c, c.fill(),   c.restore()),
     stroke(options)(c) = (c.save(), options /-install_options_on/ c, c.stroke(), c.restore()),
-    pclose(c)          = c.closePath(),
 
     pmove(x, y)(c) = c.moveTo(x, y),  pquad(cx, cy, x, y)(c)               = c.quadraticCurveTo(cx, cy, x, y),           parcto(x1, y1, x2, y2, r)(c) = c.arcTo(x1, y1, x2, y2, r),
     pline(x, y)(c) = c.lineTo(x, y),  pbezier(c1x, c1y, c2x, c2y, x, y)(c) = c.bezierCurveTo(c1x, c1y, c2x, c2y, x, y),  parc(x, y, r, sa, ea, ac)(c) = c.arc(x, y, r, sa, ea, ac),
