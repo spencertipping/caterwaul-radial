@@ -52,6 +52,9 @@ These transformations are undone after path() completes, and the path is erased 
       path_apply(fs)(c)  = (c.save(), c.beginPath(), fs *![x.call(this, c)] -seq, c.restore()),
       path()             = path_apply(arguments),
 
+      multi_apply(fs)(c) = fs *![x.call(this, c)] -seq,
+      multi()            = multi_apply(arguments),
+
       nop(c)             = c,
       clip(c)            = c.clip(),
       pclose(c)          = c.closePath(),
